@@ -59,5 +59,6 @@ login()
 
 df["HS-Codes"] = codes
 df["Keywords"] = keywords
-df.drop_duplicates()
+df.drop_duplicates(subset ="Keywords",
+                     keep= False, inplace= True)
 df.to_csv("hs-codes.csv")
