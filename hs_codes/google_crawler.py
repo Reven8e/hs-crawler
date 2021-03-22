@@ -63,11 +63,11 @@ class Google:
 
 
     def main(self):
-        i = 0
-        for product in self.products[3:]:
-            i+= 1
-            if i == 30:
-                break
+        # i = 0
+        for product in self.products:
+            # i+= 1
+            # if i == 30:
+            #     break
             urls = search(product.lower() + " hs code")
 
             for url in urls:
@@ -77,7 +77,8 @@ class Google:
                     if hidden_hs is False: continue
                     self.checker(product.lower(), url_keyword, hidden_hs)
 
-        print(f"Ratio: {self.good}/{i}")
+        print(f"Ratio: {self.good}/{len(self.products)}")
+        # print(f"Ratio: {self.good}/{i}")
         self.df["HS Code(s)"] = self.hs_codes
         self.df["Products(s)"] = self.after_products
         self.df.to_csv("Final.csv", index=False)
