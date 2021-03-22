@@ -1,22 +1,36 @@
 from bs4 import BeautifulSoup
 import pandas as pd
-import requests
+import urllib.request, http, requests
 
 
-class Scrape_Keywords:
+class scrape_keywords:
     def __init__(self):
         self.url = "https://www.ebay.com/"
         self.keywords = []
-        self.urls = []
         self.df = pd.DataFrame()
-        self.headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36"}
-        self.num = 0
+        self.headers = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36"
+        self.urls = []
+        self.f = 0
 
+
+    def requester(self, url, proxy):
+        while True:
+            try:
+                header = [('User-Agent', self.headers)]
+                proxy_handler = urllib.request.ProxyHandler({'https': proxy})        
+                opener = urllib.request.build_opener(proxy_handler)
+                opener.addheaders = header
+                urllib.request.install_opener(opener)
+                sock = urllib.request.urlopen(url)
+                return sock.read()
+
+            except Exception as e:
+                print(e)
+                pass
     
 
     def homepage(self):
-        req = requests.get(self.url, headers=self.headers)
-        soup = BeautifulSoup(req.text, 'lxml')
+        soup = BeautifulSoup(self.requester(self.url, "51.158.165.18:8811"), 'lxml')
         li = soup.find_all("li", {"class": 'hl-cat-nav__js-tab'})
         for l in li:
             link = l.find("a", href=True)
@@ -28,8 +42,7 @@ class Scrape_Keywords:
                 for key in popular:
                     keyword = key.find("a", {"class": "hl-cat-nav__js-link"})
                     print(keyword.text)
-                    self.keywords.append(keyword.text)
-                    self.num += 1
+                    self.f += 1
             except AttributeError and IndexError as e:
                 print(e)
 
@@ -38,8 +51,7 @@ class Scrape_Keywords:
                 for key in categories:
                     keyword = key.find("a", {"class": "hl-cat-nav__js-link"})
                     print(keyword.text)
-                    self.keywords.append(keyword.text)
-                    self.num += 1
+                    self.f += 1
             except AttributeError and IndexError as e:
                 print(e)  
 
@@ -56,15 +68,14 @@ class Scrape_Keywords:
         for url in self.urls:
             print("-"*10 + url + "-"*10)
             try:
-                req = requests.get(url, headers=self.headers)
-                soup = BeautifulSoup(req.text, 'lxml')
+                soup = BeautifulSoup(self.requester(url, "51.158.165.18:8811"), 'lxml')
                 table = soup.find("section", {'class': "b-module b-list b-categorynavigations b-display--landscape"})
                 keys = table.find_all("li")
                 for key in keys:
                     keyword = key.find("a")
                     print(keyword.text)
-                    self.keywords.append(keyword.text)
-                    self.num += 1
+                    self.f += 1
+
             except AttributeError:
                 table = soup.find("section", {"class": 'b-module b-list b-speciallinks b-display--landscape'})
                 keys = table.find_all("li")
@@ -73,20 +84,19 @@ class Scrape_Keywords:
                     for i in li:
                         keyword = i.find('a')
                         print(keyword.text)
-                        self.keywords.append(keyword.text)
-                        self.num += 1
-            
-            except requests.exceptions.TooManyRedirects:
-                pass
-
-        print(self.num)
-        self.df["Keywords"] = self.keywords
-        self.df.drop_duplicates(subset ="Keywords",
-                     keep= False, inplace= True)
-        self.df.to_csv("keywords.csv", index= False)
+                        self.f += 1
+        print(self.f)
 
 
     def one_url(self):
         req = requests.get("https://ebay.com/b/Electronics/bn_7000259124")
         soup = BeautifulSoup(req.text, 'lxml')
         table = soup.find("section", {'class': "b-module b-list b-categorynavigations b-display--landscape"})
+        
+
+
+# scrape_keywords().homepage()
+
+
+r = requests.get("https://www.httpbin.org/ip", proxies={'https': 'https://51.158.165.18:8811', 'http': 'http://51.158.165.18:8811'})
+print(r.text)
