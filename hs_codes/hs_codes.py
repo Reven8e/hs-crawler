@@ -36,10 +36,19 @@ class HS_Instructor:
 
 
     def fixer(self, key: list):
+        g = []
+        while ' ' in key:
+            key.remove(' ')
         while '' in key:
             key.remove('')
-        final = " ".join(key)
-        return final.replace("\n", "").replace('"', "")
+        while "\r\n" in key:
+            key.remove('\r\n')
+        while '"' in key:
+            key.remove('')
+        for k in key:
+            g.append(k.replace("\n", "").replace("\r", "").replace(",", ""))
+        final = " ".join(g)
+        return final
 
 
     def title(self):
@@ -49,11 +58,11 @@ class HS_Instructor:
             desc = col.find("div", {"class": "col-sm-9 col-lg-10"})
 
             desc_l = desc.text.split(" ")
+            code_l = code.text.split(" ")
             d = self.fixer(desc_l)
+            cod = self.fixer(code_l)
             self.desc.append(d)
-            self.codes.append(code.text)
-            print(code.text)
-            print(d)
+            self.codes.append(cod)
 
 
     def body(self):
@@ -64,22 +73,24 @@ class HS_Instructor:
                 desc = group.find("div", {"class": "col-sm-9 col-lg-10"})
 
                 desc_l = desc.text.split(" ")
+                code_l = code.text.split(" ")
                 d = self.fixer(desc_l)
+                cod = self.fixer(code_l)
                 self.desc.append(d)
-                self.codes.append(code.text)
-                print(code.text)
-                print(d)
+                self.codes.append(cod)
                 
     
     def instructor(self):
         self.sub()
         self.title()
         self.body()
-        print(len(self.codes))
-        print(len(self.desc))
+        print(self.codes[0])
+        print(self.desc[0])
 
         self.df["HS Code"] = self.codes
         self.df["Description"] = self.desc
         self.df.to_csv("instructions.csv", index=False)
 
-HS_Instructor(84).instructor()
+
+
+HS_Instructor(85).instructor() # Enter hs code number here
