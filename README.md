@@ -1,8 +1,10 @@
 # HS Codes Crawler
 
 
-### Version- 0.1
+## v1:
+- Version- 0.1
+- Regular HS Codes crawler
 
-
-
-- start the "hs_codes.py" manually.
+## v2:
+- Version- 0.01
+- XVI Section HS Codes crawler
